@@ -1,0 +1,734 @@
+{
+  "name": "NGP-022 | Incident Response Ticket Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "14197ce9-6eb0-4ac2-a1f2-ea9d9cbc6e02",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -752,
+        0
+      ],
+      "webhookId": "1becf5d4-a270-4245-88de-00be04628f47",
+      "credentials": {
+        "telegramApi": {
+          "id": "Tl08FkwIu9zW76Om",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/incident",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    },
+                    "id": "bd98c420-28e1-4854-86a7-6a8f4db232cc"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a18b203a-d29c-478e-a33e-090a1b7188f2",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/close",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6dd86340-76fa-4e12-b5e7-276d22004d99",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -528,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d8362592-ae7e-487f-8ef1-28652985762e",
+              "name": "command",
+              "value": "incident",
+              "type": "string"
+            },
+            {
+              "id": "4b4459ec-6fbb-444d-8492-902b36c08812",
+              "name": "description",
+              "value": "={{ $json.message.text.replace(/^\\/incident\\s*/i, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "24b42d01-1808-4ef2-989e-5ee75ec6c227",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -288,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "RGDN5BkMsbZn0sZq",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/RGDN5BkMsbZn0sZq",
+          "cachedResultName": "NGP-022 | Incident AI Analysis"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "30f7253f-3ab5-4ca4-ae43-a98f569eb4ac",
+      "name": "Call 'NGP-022 | Incident AI Analysis'",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        -48,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "89e6a909-c88b-4e34-9114-6283aba388aa",
+              "name": "affected_asset",
+              "value": "={{ JSON.parse($json.analysis.replace(/```json\\s*|```/g, \"\").trim()).affected_asset }}",
+              "type": "string"
+            },
+            {
+              "id": "b64654d5-b268-4c16-8f6b-84411e42173c",
+              "name": "=category",
+              "value": "={{ JSON.parse($json.analysis.replace(/```json\\s*|```/g, \"\").trim()).category }}",
+              "type": "string"
+            },
+            {
+              "id": "507ddb82-a7be-45f1-9940-35086cc372bb",
+              "name": "=severity",
+              "value": "={{ JSON.parse($json.analysis.replace(/```json\\s*|```/g, \"\").trim()).severity }}",
+              "type": "string"
+            },
+            {
+              "id": "708f8712-1770-48d9-ab95-3b592ccea1b2",
+              "name": "=suggested_owner",
+              "value": "={{ JSON.parse($json.analysis.replace(/```json\\s*|```/g, \"\").trim()).suggested_owner }}",
+              "type": "string"
+            },
+            {
+              "id": "9e0a83e1-2f4d-4d7d-88d6-07df21eaea7d",
+              "name": "=summary",
+              "value": "={{ JSON.parse($json.analysis.replace(/```json\\s*|```/g, \"\").trim()).summary }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "ffc8f2d3-abf2-485b-ba1d-7a791f491a11",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        192,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Gn5mOk5z29uDgTP2",
+          "mode": "list",
+          "cachedResultName": "NGP022_Counter",
+          "cachedResultUrl": "/projects/BkHnA14K0xJszK5y/datatables/Gn5mOk5z29uDgTP2"
+        }
+      },
+      "id": "b7038527-550f-44c5-9391-4861fdba7394",
+      "name": "Get row(s)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Gn5mOk5z29uDgTP2",
+          "mode": "list",
+          "cachedResultName": "NGP022_Counter",
+          "cachedResultUrl": "/projects/BkHnA14K0xJszK5y/datatables/Gn5mOk5z29uDgTP2"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "last_number",
+              "keyValue": "={{ $json.last_number }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "last_number": "={{ Number($json.last_number) + 1 }}"
+          },
+          "matchingColumns": [
+            "last_number"
+          ],
+          "schema": [
+            {
+              "id": "last_number",
+              "displayName": "last_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6376a14c-1380-4561-8fde-91585e37c1ed",
+      "name": "Update row(s)1",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "UjOdLU8z3EIBpEi9",
+          "mode": "list",
+          "cachedResultName": "NGP022_Incidents",
+          "cachedResultUrl": "/projects/BkHnA14K0xJszK5y/datatables/UjOdLU8z3EIBpEi9"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ticket_id",
+              "keyValue": "={{ $json.message.text.split(/\\s+/)[1] }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "closed"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "affected_asset",
+              "displayName": "affected_asset",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "suggested_owner",
+              "displayName": "suggested_owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "92f87724-894c-4672-9544-81b397e7cd10",
+      "name": "Update row(s)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        272
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {},
+      "id": "2d7c5d4a-9db9-447a-9989-d855f15f6e79",
+      "name": "Limit",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Ticket closed successfully.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "d7361131-0109-4e00-8040-0555cffa78cd",
+      "name": "Send a text message1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        272
+      ],
+      "executeOnce": true,
+      "webhookId": "62ebd45d-76b5-493a-be78-71405205a486",
+      "credentials": {
+        "telegramApi": {
+          "id": "Tl08FkwIu9zW76Om",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "4dc2b3f6-a292-4737-94a7-b4d21219e6db",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1024,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "UjOdLU8z3EIBpEi9",
+          "mode": "list",
+          "cachedResultName": "NGP022_Incidents",
+          "cachedResultUrl": "/projects/BkHnA14K0xJszK5y/datatables/UjOdLU8z3EIBpEi9"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ 'NGP-022-' + String($json.last_number).padStart(3, '0') }}",
+            "description": "={{ $('Edit Fields').item.json.description }}",
+            "affected_asset": "={{ $json.affected_asset }}",
+            "status": "open",
+            "category": "={{ $json.category }}",
+            "severity": "={{ $json.severity }}",
+            "suggested_owner": "={{ $json.suggested_owner }}",
+            "summary": "={{ $json.summary }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "affected_asset",
+              "displayName": "affected_asset",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "suggested_owner",
+              "displayName": "suggested_owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "97040eac-3a3d-480c-a5a0-7850709a1ca8",
+      "name": "Insert row",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $(\"Telegram Trigger\").item.json.message.chat.id }}",
+        "text": "=*NGP-022 — Incident Created*\n\n*Ticket ID:* {{ $('Insert row').item.json.ticket_id }}\n*Status:* Open\n*Severity:* {{ $('Insert row').item.json.severity }}\n\n*Summary:* {{ $('Insert row').item.json.summary }}\n\n*Execution:* #{{ $execution.id }}\n*Time:* {{ $now.setZone('Asia/Kolkata').toFormat('dd-MMM-yyyy HH:mm') }} IST",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "f77e9a18-55a3-467b-80a3-a9d306e090bf",
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        240
+      ],
+      "webhookId": "1afb217e-c26b-4596-bb61-e88aeb67407d",
+      "credentials": {
+        "telegramApi": {
+          "id": "Tl08FkwIu9zW76Om",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Call 'NGP-022 | Incident AI Analysis'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'NGP-022 | Incident AI Analysis'": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row(s)": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f16745f7-565a-4d62-a923-924d7f72a025",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9e88d334ba272ec8bc237e03b6f96c01126de295e919062a82e75ac5b1a8dc83"
+  },
+  "nodeGroups": [],
+  "id": "kGP1cPFBbetZ2kxT",
+  "tags": []
+}
